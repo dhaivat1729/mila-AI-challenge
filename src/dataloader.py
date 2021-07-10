@@ -31,16 +31,14 @@ def rgb2array(data_path,
     x = x.astype(np.float32)
     return x
 
-def label2array(data_path, desired_size=None, hwc=True, show=False):
+def label2array(data_path, desired_size=None, hwc=True):
 
     """Loads a bit map image."""
 
     img = Image.open(data_path)
     if desired_size:
         img = img.resize((desired_size[1], desired_size[0]))
-    x = np.array(img, dtype=np.int64)[..., 1]
-    if show:
-        plt.imshow(x, norm=MidpointNorm(0, 255, 1), interpolation='nearest')
+    x = np.array(img, dtype=np.int64)
     x = np.expand_dims(x, axis=0)
     if hwc:
         x = np.transpose(x, [1, 2, 0])
@@ -59,11 +57,8 @@ class LoadDataset(Dataset):
             cfg(cfg noe): cfg node        
         """
         
-        assert os.path.exists(root_path), "No such path exists!"
-
         ## config must be available
         assert cfg is not None, "cfg node can't be None"
-
 
         ## use this config as needed
         self.cfg = cfg
@@ -76,10 +71,10 @@ class LoadDataset(Dataset):
         # train_imgs_path = os.path.join(self.root_path, 'train', 'img')
         # mask_imgs_path = os.path.join(self.root_path, 'train', 'mask')
 
-        self.image_paths = [os.path.basename(x) for x in glob.glob(self.rgb_imgs_path + '*.jpg')]
+        self.image_paths = [os.path.basename(x) for x in glob.glob(self.rgb_imgs_path + '/*.jpg')]
         self.image_paths.sort() ## sorting to ensure that we have comparable models
 
-        self.dataset_size = len(self.train_image_names)
+        self.dataset_size = len(self.image_paths)
 
         ## let's do train/test/validation split
         self.train_proportion = cfg.CONFIG.TRAIN_PROP
@@ -95,17 +90,17 @@ class LoadDataset(Dataset):
         if data_type == "train":
             self.images_list = self.train_images
         elif data_type == "validation":
-            self.image_list = self.val_images
+            self.images_list = self.val_images
         elif data_type == "test":
-            self.image_list = self.test_images
+            self.images_list = self.test_images
         else:
-            print("data_type can only be 'train', 'validation' or 'test'.")
+            print("data_type can only be 'train', 'validation' or 'test'. {} is not valid.".format(data_type))
             sys.exit(0)
 
  
 
     def __len__(self):
-        return len(self.image_list)
+        return len(self.images_list)
 
 
     def __getitem__(self, idx):
@@ -121,7 +116,7 @@ class LoadDataset(Dataset):
         else:
             desired_size = self.cfg.CONFIG.INPUT_SIZE
 
-        img, label = rgb2array(img_path, desired_size = desired_size), label2array(label_path, desired_size = desired_size)
+        img, label = rgb2array(img_path, desired_size = desired_size), label2array(mask_path, desired_size = desired_size)
         
         ## basic normalization! This can get better. Come back to it later
         img = (img - img.min()) / (img.max() - img.min())

@@ -19,7 +19,7 @@ class Trainer(object):
 		Here we employ early stopping on precision of a foreground class, which maybe most critical! 
 
 	"""
-	def __init__(self, model = None, train_loader = None, validation_loader = None, saving_folder_name='logs', cfg = None, model_name = None):
+	def __init__(self, model = None, train_loader = None, validation_loader = None, cfg = None):
 		super(Trainer, self).__init__() 
 
 		# train loss/validation loss/average train loss/average validation loss
@@ -30,6 +30,7 @@ class Trainer(object):
 
 		## this is only needed if we want to initialize the model from scratch
 		# self.model = self.weight_init(model)
+		self.model = model
 
 		## config node
 		self.cfg = cfg
@@ -41,7 +42,6 @@ class Trainer(object):
 
 		## minority class weight
 		self.minority_cl_wt = self.cfg.CONFIG.MINORITY_CLASS_WEIGHT
-
 
 		## Optimizer! TODO: Made this config friendly.
 		self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.cfg.CONFIG.LR) 
@@ -59,8 +59,8 @@ class Trainer(object):
 		# 	print('Making dir {}'.format(self.saving_folder_name))
 		# 	os.makedirs(saving_folder_name)
 
-		self.output_dir = os.path.join(saving_folder_name, self.model_name)
-		os.makedirs(self.output_dir)
+		self.output_dir = self.cfg.CONFIG.SAVING_FOLDERS_NAME
+		
 		self.eps = 1e-8
 
 		## in future, this is to resume training. 
@@ -118,7 +118,7 @@ class Trainer(object):
 			train and validate results!
 		"""
 
-		progress_bar =  tqdm(total=self.n_epochs)
+		progress_bar =  tqdm(total=self.n_epochs * len(self.train_loader) + self.n_epochs * len(self.val_loader))
 		n_iterations = 0
 		first_epoch = 0
 		
@@ -126,7 +126,6 @@ class Trainer(object):
 
 		for epoch in range(1, self.n_epochs + 1):
 			
-			progress_bar.update()
 
 			###################
 			# train the model #
@@ -135,6 +134,8 @@ class Trainer(object):
 			self.model.train() # prep model for training
 			for batch, data in enumerate(self.train_loader, 1):
 				
+				progress_bar.update()
+
 				## input
 				image, label = data['image'].cuda(), data['label'].cuda()
 				
@@ -171,6 +172,8 @@ class Trainer(object):
 				
 				for data in self.val_loader:
 				
+					progress_bar.update()
+
 					# forward pass: compute predicted outputs by passing inputs to the model
 					image, label = data['image'].cuda(), data['label'].cuda()
 					
@@ -191,23 +194,27 @@ class Trainer(object):
 					output_numpy[output_numpy > 0.5] = 1
 					output_numpy[output_numpy <= 0.5] = 0
 
-					results = classification_report(list(label_numpy.flatten().astype(int)), list(output_numpy.flatten().astype(int)), labels=[0,1], output_dict=True)
-					conf_mat = confusion_matrix(list(label_numpy.flatten().astype(int)), list(output_numpy.flatten().astype(int)))
+					# # results = classification_report(list(label_numpy.flatten().astype(int)), list(output_numpy.flatten().astype(int)), labels=[0,1], output_dict=True)
+					# conf_mat = confusion_matrix(list(label_numpy.flatten().astype(int)), list(output_numpy.flatten().astype(int)))
+
+					# tn, fp, fn, tp = conf_mat.ravel()
 					
-					print("tn, fp, fn, tp ", conf_mat.ravel())
+					# precision = tp / (tp + fp)
+
+					# print("tn, fp, fn, tp ", conf_mat.ravel())
 					
-					print("Precision of foreground class is: ",results['1'])
+					# print("Precision of foreground class is: ", precision)
 					
-					self.val_precision.append(results['1']['precision'])
+					# self.val_precision.append(precision)
 					self.writer.add_scalar('Loss/val', loss.item(), self.iter_test)
-					self.writer.add_scalar('Precision/val', results['1']['precision'], self.iter_test)
+					# self.writer.add_scalar('Precision/val', precision, self.iter_test)
 					self.iter_test +=1
 		
 			# print training/validation statistics 
 			# calculate average loss over an epoch
 			train_loss = np.average(self.train_losses)
 			valid_loss = np.average(self.valid_losses)
-			val_prec = np.average(self.val_precision)
+			# val_prec = np.average(self.val_precision)
 			self.avg_train_losses.append(train_loss)
 			self.avg_valid_losses.append(valid_loss)
 			
@@ -226,14 +233,11 @@ class Trainer(object):
 			
 			# early_stopping needs the validation precision to check if it has increased, 
 			# and if it has, it will make a checkpoint of the current model
-			early_stopping(-val_prec, self.model)
+			early_stopping(valid_loss, self.model)
 			
 			if early_stopping.early_stop:
 				print("Early stopping")
 				break
 			
 		# load the last checkpoint with the best model
-		self.model.load_state_dict(torch.load(os.path.join(self.saving_folder_name, self.model_name, 'final_model.pt')))
-			
-
-		
+		self.model.load_state_dict(torch.load(self.model_path))

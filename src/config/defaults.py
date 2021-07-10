@@ -3,7 +3,7 @@ from .config import CfgNode as CN
 
 # -----------------------------------------------------------------------------
 # Borrowed as it is from detectron2! This is a base config,
-# make change in mail file not here.
+# make change in main file.
 # -----------------------------------------------------------------------------
 # Config definition
 # -----------------------------------------------------------------------------
@@ -57,8 +57,7 @@ _C.CONFIG.NUM_CLASSES = 1
 _C.CONFIG.ROOT_DIR = 'logs'
 
 ## batchsize for trainloader/validationloader
-_C.CONFIG.BATCHSIZE = 16
-
+_C.CONFIG.BATCHSIZE = 128
 
 ## train/val/test proportion
 _C.CONFIG.TRAIN_PROP = 0.6
@@ -82,16 +81,19 @@ _C.CONFIG.INPUT_SIZE = 'default'
 _C.CONFIG.SAVING_FOLDERS_NAME = 'logs/model_name'
 
 ## weight of a minority class(to tackle class imbalance)
-_C.CONFIG.MINORITY_CLASS_WEIGHT = 10
+_C.CONFIG.MINORITY_CLASS_WEIGHT = 20
 
 ## training epochs
 _C.CONFIG.TRAIN_EPOCHS = 30
 
 ## early stopping patience
-_C.CONFIG.PATIENCE = 10
+_C.CONFIG.PATIENCE = 5
 
 ## learning rate
 _C.CONFIG.LR = 0.015
 
 ## torch device
 _C.CONFIG.DEVICE = ''
+
+## freeze backbone
+_C.CONFIG.FREEZE_BACKBONE = False
