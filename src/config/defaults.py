@@ -57,12 +57,12 @@ _C.CONFIG.NUM_CLASSES = 1
 _C.CONFIG.ROOT_DIR = 'logs'
 
 ## batchsize for trainloader/validationloader
-_C.CONFIG.BATCHSIZE = 128
+_C.CONFIG.BATCHSIZE = 32
 
 ## train/val/test proportion
-_C.CONFIG.TRAIN_PROP = 0.6
-_C.CONFIG.VAL_PROP = 0.15
-_C.CONFIG.TEST_PROP = 0.25
+_C.CONFIG.TRAIN_PROP = 0.75
+_C.CONFIG.VAL_PROP = 0.25
+_C.CONFIG.TEST_PROP = 0.0
 
 ## train images path
 ## change it in the main script
@@ -87,13 +87,24 @@ _C.CONFIG.MINORITY_CLASS_WEIGHT = 20
 _C.CONFIG.TRAIN_EPOCHS = 30
 
 ## early stopping patience
-_C.CONFIG.PATIENCE = 5
+_C.CONFIG.PATIENCE = 10
+
+## L2 weight regularization
+_C.CONFIG.L2_PENALTY = 0.0
 
 ## learning rate
-_C.CONFIG.LR = 0.015
+_C.CONFIG.LR = 0.02
+
+## learning rate scheduling
+_C.CONFIG.LR_SCHEDULER_MS = [12, 20, 25]
+_C.CONFIG.LR_SCHEDULE_DECAY = 0.1
 
 ## torch device
 _C.CONFIG.DEVICE = ''
 
 ## freeze backbone
 _C.CONFIG.FREEZE_BACKBONE = False
+
+## validation metric
+## could be from ['IoU', 'val_loss']
+_C.CONFIG.METRIC = 'val_loss' 
