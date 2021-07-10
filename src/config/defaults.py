@@ -40,6 +40,7 @@ _C.CONFIG.PRETRAINED = False
 _C.CONFIG.DATASET_DIR = '/network/tmp1/bhattdha/segmentation_project/'
 
 ## NUMBER OF channels in the input
+## currently, only 3 is supported
 _C.CONFIG.NUM_CHANNELS = 3
 
 
@@ -57,6 +58,17 @@ _C.CONFIG.ROOT_DIR = 'logs'
 
 ## batchsize for trainloader/validationloader
 _C.CONFIG.BATCHSIZE = 16
+
+
+## train/val/test proportion
+_C.CONFIG.TRAIN_PROP = 0.6
+_C.CONFIG.VAL_PROP = 0.15
+_C.CONFIG.TEST_PROP = 0.25
+
+## train images path
+## change it in the main script
+_C.CONFIG.INPUT_PATH = '/network/tmp1/bhattdha/segmentation_project/train/img/'
+_C.CONFIG.MASK_PATH = '/network/tmp1/bhattdha/segmentation_project/train/mask/'
 
 ## whether to shuffle the dataset or not
 _C.CONFIG.DATA_SHUFFLE = True
