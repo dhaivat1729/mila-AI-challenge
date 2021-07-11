@@ -31,7 +31,7 @@ device = torch.device('cuda')
 cfg = get_cfg()
 
 ## this is the best model! Many other models are there to be tested too.
-model_directory = '/network/tmp1/bhattdha/segmentation_project/logs/deeplabv3_resnet101_v1_jaccard_training'
+model_directory = 'mila-segmentation-logs/lraspp_mobilenet_v3_large_v4_jaccard_training'
 
 ## loading the original config
 cfg.merge_from_file(os.path.join(model_directory, 'config.yaml'))
