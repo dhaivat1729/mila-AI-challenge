@@ -3,7 +3,7 @@
 ## Implementation details
 
 ### Model details:
-*  In this work, I employ 3 different widely known semantic segmentation architectures and 3 different backbones. In total, I report results for 8 different models, each of them trained from scratch. The 9 model variants are,
+*  In this work, I employ 3 different widely known semantic segmentation architectures and 3 different backbones. In total, I report results for 8 different models, each of them trained from scratch. The 8 model variants are,
 
     1. [FCN](https://arxiv.org/abs/1411.4038) + [ResNet50](https://arxiv.org/abs/1512.03385) 
     2. [FCN](https://arxiv.org/abs/1411.4038) + [ResNet101](https://arxiv.org/abs/1512.03385)
@@ -32,8 +32,7 @@
 
     1. [Pytorch vision](https://github.com/pytorch/vision/tree/master/torchvision/models/segmentation) - used for Deeplabv3, ResNets, MobileNets
     2. [Early stopping](https://github.com/Bjarten/early-stopping-pytorch) - To implement early stopping
-    3. [UNet](https://github.com/milesial/Pytorch-UNet) - For UNet
-    4. [detectron2](https://github.com/facebookresearch/detectron2) - For config nodes
+    3. [detectron2](https://github.com/facebookresearch/detectron2) - For config nodes
     
 ### Installing dependencies:
 
@@ -79,23 +78,19 @@ python train_net.py -dataset_path '/path/to/segmentation_project/' -model_name <
 * `<model name>` could be `fcn_resnet101`, `fcn_resnet50`, `deeplabv3_resnet50`, `deeplabv3_resnet101`, `lraspp_mobilenet_v3_large`, `deeplabv3_mobilenet_v3_large`, `deeplabv3_mobilenet_v3_small`, `lraspp_mobilenet_v3_small`
 * `model_ver` is used to version the model incase multiple models of same architectures need to be trained.
 
-## Expected structure for pretrained model directory:
+## Expected structure for `dataset_path` directory:
 ```
 segmentation_project/
   train/
     img/
       1.jpg
       2.jpg
-      3.jpg
-      .
       .
       .
       n.jpg
     mask/
       1.BMP
       2.BMP
-      3.BMP
-      .
       .
       .
       n.BMP
@@ -158,4 +153,4 @@ mila-AI-challenge/
       n.BMP
 ```
 
-#### You can run inference on any of the trained models by changing `model_directory` variable in `infer.py`
+#### You can run inference on any of the trained models by changing ` "model_directory" ` variable in `infer.py`
