@@ -21,7 +21,7 @@ def rgb2array(data_path,
     """Loads a 24-bit RGB image as a 3D numpy array."""
 
     img = Image.open(data_path).convert('RGB')
-    if desired_size:
+    if desired_size not in ['default',None]:
         img = img.resize((desired_size[1], desired_size[0]))
     x = np.array(img, dtype=np.float32) 
     if not hwc:
@@ -36,7 +36,7 @@ def label2array(data_path, desired_size=None, hwc=True):
     """Loads a bit map image."""
 
     img = Image.open(data_path)
-    if desired_size:
+    if desired_size not in ['default',None]:
         img = img.resize((desired_size[1], desired_size[0]))
     x = np.array(img, dtype=np.int64)
     x = np.expand_dims(x, axis=0)
@@ -110,13 +110,8 @@ class LoadDataset(Dataset):
         img_path = os.path.join(self.rgb_imgs_path, self.train_images[idx])
         mask_path = os.path.join(self.mask_imgs_path, self.train_images[idx][:-4] + '.bmp') ## loading groundtruth corresponding to an image
         
-        ## change input image size based on config!
-        if self.cfg.CONFIG.INPUT_SIZE == 'default':
-            desired_size = None
-        else:
-            desired_size = self.cfg.CONFIG.INPUT_SIZE
 
-        img, label = rgb2array(img_path, desired_size = desired_size), label2array(mask_path, desired_size = desired_size)
+        img, label = rgb2array(img_path, desired_size = self.cfg.CONFIG.INPUT_SIZE), label2array(mask_path, desired_size = self.cfg.CONFIG.INPUT_SIZE)
         
         ## basic normalization! This can get better. Come back to it later
         img = (img - img.min()) / (img.max() - img.min())

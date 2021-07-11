@@ -4,7 +4,6 @@ from .early_stopping import EarlyStopping
 import math
 from tqdm import tqdm
 import os
-import torchvision.utils as vutils
 import torch.nn.functional as F
 from torch.utils.tensorboard import SummaryWriter
 import numpy as np

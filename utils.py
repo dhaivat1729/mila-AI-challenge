@@ -41,7 +41,7 @@ def setup(args):
 
 	## Output directory
 	## You can override this to any arbitrary path!
-	cfg.CONFIG.SAVING_FOLDERS_NAME = os.path.join(dataset_path, 'logs', cfg.CONFIG.MODEL_NAME + '_' + model_version)
+	cfg.CONFIG.SAVING_FOLDERS_NAME = os.path.join('logs', cfg.CONFIG.MODEL_NAME + '_' + model_version)
 
 	## make directories
 	os.makedirs(cfg.CONFIG.SAVING_FOLDERS_NAME, exist_ok = True)
