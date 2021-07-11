@@ -153,4 +153,4 @@ mila-AI-challenge/
       n.BMP
 ```
 
-#### You can run inference on any of the trained models by changing ` "model_directory" ` variable in `infer.py`
+#### You can run inference on any of the trained models by changing ` "model_directory" ` variable in `infer.py`. The default value is chosen based on its performance and inference time. 
