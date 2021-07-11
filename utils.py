@@ -36,8 +36,8 @@ def setup(args):
 	cfg.CONFIG.MASK_PATH = os.path.join(dataset_path, 'train', 'mask') ## all the groundtruth masks should be here!
 
 	## freeze the backbone if weights are pretrained
-	if pretrained_flags[model_name]:
-		cfg.CONFIG.FREEZE_BACKBONE = True
+	# if pretrained_flags[model_name]:
+	cfg.CONFIG.FREEZE_BACKBONE = False
 
 	## Output directory
 	## You can override this to any arbitrary path!
@@ -45,6 +45,15 @@ def setup(args):
 
 	## make directories
 	os.makedirs(cfg.CONFIG.SAVING_FOLDERS_NAME, exist_ok = True)
+
+	## L2 penalty(make it command line friendly)
+	cfg.CONFIG.L2_PENALTY = 0.0
+
+	## IoU as validation metric
+	cfg.CONFIG.METRIC = 'IoU'
+
+	## Loss function to be used
+	cfg.CONFIG.LOSS_TYPE = "IoULoss"
 
 	## freeze the config.
 	cfg.freeze()

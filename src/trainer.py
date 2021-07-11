@@ -16,7 +16,7 @@ class Trainer(object):
 	"""
 	Trainer object: 
 		Here we implement basic form of training logic using early_stopping,
-		Here we employ early stopping on precision of a foreground class, which maybe most critical! 
+		Here we employ early stopping on validation metric prescribed by the config file! 
 
 	"""
 	def __init__(self, model = None, train_loader = None, validation_loader = None, cfg = None):
@@ -47,6 +47,15 @@ class Trainer(object):
 		## Optimizer! TODO: Made this config friendly.
 		self.optimizer = torch.optim.Adam(self.model.parameters(), lr=self.cfg.CONFIG.LR, weight_decay = self.cfg.CONFIG.L2_PENALTY) 
 		
+		## Loss function for training!
+
+		if self.cfg.CONFIG.LOSS_TYPE == "WeightedBCE":
+			self.loss_func = self.weightBCEwithlogits
+		elif self.cfg.CONFIG.LOSS_TYPE == "IoULoss":
+			self.loss_func = self.IoU_loss
+		else:
+			print("Loss function {} not supported".format(self.CONFIG.LOSS_TYPE))
+
 		## Learning rate scheduler
 		self.scheduler = torch.optim.lr_scheduler.MultiStepLR(self.optimizer, milestones = self.cfg.CONFIG.LR_SCHEDULER_MS, gamma = self.cfg.CONFIG.LR_SCHEDULE_DECAY)
 
@@ -110,6 +119,26 @@ class Trainer(object):
 		assert uscore != 0, 'the label {} is not present in the pred and the mask'.format(label)
 
 		return iscore / uscore
+
+	def IoU_loss(self, label, output):
+		
+		""" 
+			Jaccard index: IoU loss function!
+		"""
+		assert label.shape == output.shape
+
+		## converting logits to probability for binary classification
+		output = torch.sigmoid(output)
+
+		label = label.flatten()
+		output = output.flatten()
+
+		## add 1 to avoid breaking numerical stability
+		intersection = (label * output).sum() + 1
+		union = (label.sum() + output.sum() - intersection + 1)
+
+		## we want to maximize IoU, so minimize (-IoU)
+		return -self.cfg.CONFIG.JACCARD_LOSS_WEIGHT * intersection / union
 
 
 
@@ -176,7 +205,7 @@ class Trainer(object):
 					output = output['out']
 				
 				# calculate the loss
-				loss = self.weightBCEwithlogits(label.type('torch.cuda.FloatTensor'), output) ## TODO: Make this better. This is hacky!
+				loss = self.loss_func(label.type('torch.cuda.FloatTensor'), output) ## TODO: Make this better. This is hacky!
 				
 				# backward pass
 				loss.backward()
@@ -211,7 +240,7 @@ class Trainer(object):
 						output = output['out']
 					
 					# calculate the loss
-					loss = self.weightBCEwithlogits(label.type('torch.cuda.FloatTensor'), output) ## fix this datatype thing, it's ugly!
+					loss = self.loss_func(label.type('torch.cuda.FloatTensor'), output) ## fix this datatype thing, it's ugly!
 					
 					# record validation loss
 					self.valid_losses.append(loss.item())
@@ -236,7 +265,7 @@ class Trainer(object):
 			# calculate average loss over an epoch
 			train_loss = np.average(self.train_losses)
 			valid_loss = np.average(self.valid_losses)
-			valid_IoU = np.average(self.val)
+			valid_IoU = np.average(self.val_IoUs)
 			# val_prec = np.average(self.val_precision)
 			self.avg_train_losses.append(train_loss)
 			self.avg_valid_losses.append(valid_loss)
@@ -263,7 +292,7 @@ class Trainer(object):
 				val_metric = -valid_IoU ## because IoU needs to be high!
 
 			# early_stopping needs the validation metric to decrease
-			self.early_stopping(valid_IoU, self.model)
+			self.early_stopping(val_metric, self.model)
 			
 			### break if we need to early stop!
 			if self.early_stopping.early_stop:

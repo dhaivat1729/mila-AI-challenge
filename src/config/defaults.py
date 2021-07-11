@@ -57,7 +57,7 @@ _C.CONFIG.NUM_CLASSES = 1
 _C.CONFIG.ROOT_DIR = 'logs'
 
 ## batchsize for trainloader/validationloader
-_C.CONFIG.BATCHSIZE = 32
+_C.CONFIG.BATCHSIZE = 128
 
 ## train/val/test proportion
 _C.CONFIG.TRAIN_PROP = 0.75
@@ -81,6 +81,7 @@ _C.CONFIG.INPUT_SIZE = 'default'
 _C.CONFIG.SAVING_FOLDERS_NAME = 'logs/model_name'
 
 ## weight of a minority class(to tackle class imbalance)
+## this is only used in weighted BCE loss
 _C.CONFIG.MINORITY_CLASS_WEIGHT = 20
 
 ## training epochs
@@ -89,11 +90,16 @@ _C.CONFIG.TRAIN_EPOCHS = 30
 ## early stopping patience
 _C.CONFIG.PATIENCE = 10
 
+## loss functions!
+## It could be anything in ['WeightedBCE', 'IoULoss']
+_C.CONFIG.LOSS_TYPE = 'WeightedBCE'
+_C.CONFIG.JACCARD_LOSS_WEIGHT = 20
+
 ## L2 weight regularization
 _C.CONFIG.L2_PENALTY = 0.0
 
 ## learning rate
-_C.CONFIG.LR = 0.02
+_C.CONFIG.LR = 0.1
 
 ## learning rate scheduling
 _C.CONFIG.LR_SCHEDULER_MS = [12, 20, 25]
