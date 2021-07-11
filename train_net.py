@@ -3,13 +3,10 @@ import os
 from src import LoadDataset, Trainer
 import torch
 import torchvision
-from torchsummary import summary
 import random
 import numpy as np
 import argparse
-from utils import setup, pretrained_flags
-
-## currently, these segmentation models are supported, more to come!
+from utils import setup, pretrained_flags	
 from src.models.segmentation import (fcn_resnet101, 
 									fcn_resnet50, 
 									deeplabv3_resnet50, 
