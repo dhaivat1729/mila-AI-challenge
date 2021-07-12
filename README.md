@@ -34,6 +34,22 @@
     2. [Early stopping](https://github.com/Bjarten/early-stopping-pytorch) - To implement early stopping
     3. [detectron2](https://github.com/facebookresearch/detectron2) - For config nodes
     
+
+### Results:
+
+* We report the results for models trained using IoU loss. We maximize the overlap between predicted foreground masks and ground truth foreground masks. We can see the results below. It is evident that `Lite R-ASPP +  MobilenetV3 large` is able to perform very well for very less number of parameters. Such models provide perfect balance of performance and computational complexity, and hence desirable for most applications. 
+
+|               model               |   IoU     |  # params     |
+|:--------------------------------: |:-------:  |:----------:   |
+|  DeeplabV3 + MobilenetV3 large    | 0.46458   | 11,023,968    |
+|  DeeplabV3 +  MobilenetV3 small   |  0.4557   |  6,124,577    |
+|       DeeplabV3 + ResNet101       |  0.5724   | 60,985,922    |
+|       DeeplabV3 + ResNet50        |  0.5789   | 41,993,794    |
+|          FCN + ResNet50           |  0.5663   | 35,306,818    |
+|          FCN + ResNet101          |  0.5596   | 54,298,946    |
+| Lite R-ASPP +  MobilenetV3 large  |  0.5301   |  3,218,138    |
+|  Lite R-ASPP + MobilenetV3 small  |  0.4768   |  1,074,874    |
+
 ### Installing dependencies:
 
 ```
