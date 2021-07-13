@@ -99,17 +99,17 @@ python train_net.py -dataset_path '/path/to/segmentation_project/' -model_name <
 segmentation_project/
   train/
     img/
-      1.jpg
-      2.jpg
+      <image 1>.jpg
+      <image 2>.jpg
       .
       .
-      n.jpg
+      <image n>.jpg
     mask/
-      1.BMP
-      2.BMP
+      <image 1>.BMP
+      <image 2>.BMP
       .
       .
-      n.BMP
+      <image n>.BMP
 ```
 
 ### Example:
@@ -136,11 +136,11 @@ mila-AI-challenge/
   infer.py
   test_data/
     img/
-      1.jpg
-      2.jpg
+      <image 1>.jpg
+      <image 2>.jpg
         .
         .
-      n.jpg
+      <image n>.jpg
 ```
 
 #### then we can run inference as below,
@@ -156,17 +156,17 @@ mila-AI-challenge/
   infer.py
   test_data/
     img/
-      1.jpg
-      2.jpg
+      <image 1>.jpg
+      <image 2>.jpg
         .
         .
-      n.jpg
+      <image n>.jpg
     bmp_results/
-      1.BMP
-      2.BMP
+      <image 1>.BMP
+      <image 2>.BMP
         .
         .
-      n.BMP
+      <image n>.BMP
 ```
 
 #### You can run inference on any of the trained models by changing ` "model_directory" ` variable in `infer.py`. The default value is chosen based on its performance and inference time. 
